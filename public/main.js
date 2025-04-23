@@ -4,17 +4,22 @@ var trash = document.getElementsByClassName("fa-trash");
 
 Array.from(thumbUp).forEach(function(element) {
       element.addEventListener('click', function(){
-        const name = this.parentNode.parentNode.childNodes[1].innerText
-        const msg = this.parentNode.parentNode.childNodes[3].innerText
-        const thumbUp = parseFloat(this.parentNode.parentNode.childNodes[5].innerText)
+        const bookNameVal = this.parentNode.parentNode.childNodes[1].innerText
+        const bookAuthorVal = this.parentNode.parentNode.childNodes[3].innerText
+        const yearCreatedVal = parseInt(this.parentNode.parentNode.childNodes[5].innerText)
+        const currentlyReadingVal = this.parentNode.parentNode.childNodes[7].innerText
+
         // console.log("this is thumbUp", thumbUp)
-        fetch('messages/upVote', {
+        fetch('updateBookEntry/reading', {
           method: 'put',
           headers: {'Content-Type': 'application/json'},
+          //this is req.body
+          //req.body.(insert key name) will be how you target the value grabbed from the submit button that will go over to server.js
           body: JSON.stringify({
-            'name': name,
-            'msg': msg,
-            'thumbUp': thumbUp
+            'bookName': bookNameVal,
+            'bookAuthor': bookAuthorVal,
+            'yearCreated': yearCreatedVal,
+            'currentlyReading': currentlyReadingVal
           })
         })
         .then(response => {
@@ -30,17 +35,19 @@ Array.from(thumbUp).forEach(function(element) {
 
 Array.from(thumbDown).forEach(function(element) {
   element.addEventListener('click', function(){
-    const name = this.parentNode.parentNode.childNodes[1].innerText
-    const msg = this.parentNode.parentNode.childNodes[3].innerText
-    const thumbUp = parseFloat(this.parentNode.parentNode.childNodes[5].innerText)
+    const bookNameVal = this.parentNode.parentNode.childNodes[1].innerText
+    const bookAuthorVal = this.parentNode.parentNode.childNodes[3].innerText
+    const yearCreatedVal = parseInt(this.parentNode.parentNode.childNodes[5].innerText)
+    const currentlyReadingVal = this.parentNode.parentNode.childNodes[7].innerText
     // console.log("this is thumbDown", thumbDown)
-    fetch('messages/downVote', {
+    fetch('updateBookEntry/notReading', {
       method: 'put',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
-        'name': name,
-        'msg': msg,
-        'thumbUp': thumbUp
+        'bookName': bookNameVal,
+        'bookAuthor': bookAuthorVal,
+        'yearCreated': yearCreatedVal,
+        'currentlyReading': currentlyReadingVal
       })
     })
     .then(response => {
@@ -48,7 +55,7 @@ Array.from(thumbDown).forEach(function(element) {
     })
     .then(data => {
       // console.log(data)
-      // window.location.reload(true)
+      window.location.reload(true)
       console.log("this is thumbDown in then data", thumbDown)
     })
   });
@@ -56,16 +63,20 @@ Array.from(thumbDown).forEach(function(element) {
 
 Array.from(trash).forEach(function(element) {
       element.addEventListener('click', function(){
-        const name = this.parentNode.parentNode.childNodes[1].innerText
-        const msg = this.parentNode.parentNode.childNodes[3].innerText
-        fetch('messages', {
+        const bookNameVal = this.parentNode.parentNode.childNodes[1].innerText
+        const bookAuthorVal = this.parentNode.parentNode.childNodes[3].innerText
+        const yearCreatedVal = this.parentNode.parentNode.childNodes[5].innerText
+        const currentlyReadingVal = this.parentNode.parentNode.childNodes[7].innerText
+        fetch('deleteBookEntry', {
           method: 'delete',
           headers: {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            'name': name,
-            'msg': msg
+            'bookName': bookNameVal,
+            'bookAuthor': bookAuthorVal,
+            'yearCreated': yearCreatedVal,
+            'currentlyReading': currentlyReadingVal
           })
         }).then(function (response) {
           window.location.reload()

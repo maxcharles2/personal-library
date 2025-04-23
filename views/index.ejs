@@ -8,19 +8,20 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h1>21 Savage</h1>
-  <h2>Why you trappin so hard?</h2>
+  <h1>Personal library</h1>
+  <h2>Checkout your different book collections!</h2>
 
+<%# this is comment syntax in EJS %>
 
-  <h3>Messages</h3>
-  <ul class="messages"> <!-- each line when you press enter is a new node regardless if it's -->
-  <% for(var i=0; i<messages.length; i++) {%>
-    <li class="message">
-      <span><%= messages[i].name %></span> <!-- node index [1]-->
-      <span><%= messages[i].msg %></span> <!-- node index [3]-->
-      <span><%= messages[i].thumbUp %></span> <!-- node index [5]-->
+  <h3>Current list of books:</h3>
+  <ul class="book-list"> <%# each line when you press enter is a new node regardless if it's %>
+  <% for(var i=0; i<bookList.length; i++) {%>
+    <li class="book"> <%# res.render('index.ejs', {key(bookList): value(bookList[i].bookName)}) %>
+      <span><%= bookList[i].bookNameDB %></span> <%# node index [1] %>
+      <span><%= bookList[i].bookAuthorDB %></span> <%# node index [3] %>
+      <span><%= bookList[i].yearCreatedDB %></span> <%# node index [5] %>
+      <span><%= bookList[i].currentlyReadingDB %></span> <%# node index [7] yes or no %>
       <span><i class="fa fa-thumbs-up" aria-hidden="true"></i></span>
-      <!-- <span><%= messages[i].thumbDown %></span> -->
       <span><i class="fa fa-thumbs-down" aria-hidden="true"></i></span>
       <span><i class="fa fa-trash" aria-hidden="true"></i></span>
     </li>
@@ -28,10 +29,18 @@
   </ul>
 
   <h2>Add a message</h2>
-
-  <form action="/messages" method="POST">
-    <input type="text" placeholder="name" name="name">
-    <input type="text" placeholder="message" name="msg">
+<%# don't need to add post route since submit will add to database and create it %>
+<%# the key name for the post request body is what the name attribute is in the input tag (check network tab submission under payload (300)%>
+  <form action="/createBookEntry" method="POST">
+    <input type="text" placeholder="ex. How to win friends and influence people" name="bookNameFromForm">
+    <input type="text" placeholder="ex. Dale Carnegie" name="bookAuthorFromForm">
+    <input type="text" placeholder="ex. 1987" name="yearCreatedFromForm">
+    <label for="currentlyReadingChoice"></label>
+    <select name="currentlyReadingChoiceFromForm" id="currentlyReadingChoice">
+      <option value="question">Are you currently reading this book?</option>
+      <option value="yes">Yes</option>
+      <option value="no">No</option>
+    </select>
     <button type="submit">Submit</button>
   </form>
 
