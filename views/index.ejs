@@ -14,24 +14,33 @@
 <%# this is comment syntax in EJS %>
 
   <h3>Current list of books:</h3>
-  <ul class="book-list"> <%# each line when you press enter is a new node regardless if it's %>
+  <ul class="bookListContainer"> <%# each line when you press enter is a new node regardless if it's %>
   <% for(var i=0; i<bookList.length; i++) {%>
-    <li class="book"> <%# res.render('index.ejs', {key(bookList): value(bookList[i].bookName)}) %>
-      <span><%= bookList[i].bookNameDB %></span> <%# node index [1] %>
-      <span><%= bookList[i].bookAuthorDB %></span> <%# node index [3] %>
-      <span><%= bookList[i].yearCreatedDB %></span> <%# node index [5] %>
-      <span><%= bookList[i].currentlyReadingDB %></span> <%# node index [7] yes or no %>
-      <span><i class="fa fa-thumbs-up" aria-hidden="true"></i></span>
-      <span><i class="fa fa-thumbs-down" aria-hidden="true"></i></span>
-      <span><i class="fa fa-trash" aria-hidden="true"></i></span>
+    <li class="bookItem" data-id="<%= bookList[i]._id %>"> <%# res.render('index.ejs', {key(bookList): value(bookList[i].bookName)}) %>
+      <div>
+        <span class="bookName"><%= bookList[i].bookNameDB %> by</span> <%# node index [1] %>
+        <span class="bookAuthor"><%= bookList[i].bookAuthorDB %></span> <%# node index [3] %>
+      </div>
+      <span class="yearCreated">Year created: <%= bookList[i].yearCreatedDB %></span> <%# node index [5] %>
+      <span class="currentlyReading">Currently reading: <%= bookList[i].currentlyReadingDB %></span> <%# node index [7] yes or no %>
+      <span class="yearCreated">Reading progress: <%= bookList[i].readingProgressDB %></span>
+      <label for="readingProgress">Reading progress
+        <input type="range" name="" id="readingProgress" class="readingProgressFromInput">
+        <button class="updateReadingProgressBtn">Edit</button>
+      </label>
+      <div>
+        <!-- <span><i class="fa fa-thumbs-up" aria-hidden="true"></i></span>
+        <span><i class="fa fa-thumbs-down" aria-hidden="true"></i></span> -->
+        <span><i class="fa fa-trash" aria-hidden="true"></i></span>
+      </div>
     </li>
   <% } %>
   </ul>
 
-  <h2>Add a message</h2>
+  <h2>Add a book</h2>
 <%# don't need to add post route since submit will add to database and create it %>
 <%# the key name for the post request body is what the name attribute is in the input tag (check network tab submission under payload (300)%>
-  <form action="/createBookEntry" method="POST">
+  <form action="/createBookEntry" method="POST" class="bookListForm">
     <input type="text" placeholder="ex. How to win friends and influence people" name="bookNameFromForm">
     <input type="text" placeholder="ex. Dale Carnegie" name="bookAuthorFromForm">
     <input type="text" placeholder="ex. 1987" name="yearCreatedFromForm">
@@ -41,6 +50,9 @@
       <option value="yes">Yes</option>
       <option value="no">No</option>
     </select>
+    <label for="readingProgress">Reading progress
+      <input type="range" name="readingProgressFromForm" id="readingProgress" min="0" max="100">
+    </label>
     <button type="submit">Submit</button>
   </form>
 

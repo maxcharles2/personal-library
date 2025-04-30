@@ -1,6 +1,27 @@
 body{
-  background: red;
+  background: rgb(238, 217, 109);
+  color: #000000;
 }
+
 h3{
   margin-top: 40px;
+}
+
+svg {
+  fill: #000;
+  width: 35px;
+}
+
+.bookListForm {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.bookItem {
+  display: flex;
+  flex-direction: column;
+  border: 2px solid #F5F5DC;
+  border-radius: 16px;
+  align-items: center;
 }

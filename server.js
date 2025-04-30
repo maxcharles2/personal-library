@@ -3,11 +3,17 @@ const app = express()
 const bodyParser = require('body-parser')
 const MongoClient = require('mongodb').MongoClient
 const PORT = 3000;
+const { ObjectId } = require('mongodb');
+const dotenv = require('dotenv') //import this to allow process.env to work to access your password from the env file and mask password with a template literal
+
+dotenv.config(); //returns an object that contains all the parsed environment variables from the .env variable
 
 var db, collection;
-
-const url = `mongodb+srv://maxcharlesdev:${process.env.DB_PASSWORD}@personal-library-cluste.uhyfcxw.mongodb.net/?retryWrites=true&w=majority&appName=personal-library-cluster`;
-const dbName = "personal-library"; //was originally called demo not sure what this relates to
+//${process.env.DB_PASSWORD}
+//mongodb+srv://maxcharlesdev:mongo-access@express-app-cluster.pmoffnv.mongodb.net/course-tracker?retryWrites=true&w=majority&appName=Express-app-cluster
+const url = `mongodb+srv://maxcharlesdev:mongo-access@express-app-cluster.pmoffnv.mongodb.net/personal-library?retryWrites=true&w=majority&appName=Express-app-cluster`;
+// const url = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@express-app-cluster.pmoffnv.mongodb.net/personal-library?retryWrites=true&w=majority&appName=Express-app-cluster`;
+const dbName = "personal-library-database"; //was originally called demo not sure what this relates to
 
 app.listen(PORT, () => {
     MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true }, (error, client) => {
@@ -36,8 +42,8 @@ app.get('/', (req, res) => {
 app.post('/createBookEntry', (req, res) => {
   //the request (req) is coming from the form submission in index.ejs
   console.log("request body", req.body)
-  
-  db.collection('books').insertOne({bookNameDB: req.body.bookNameFromForm, bookAuthorDB: req.body.bookAuthorFromForm, yearCreatedDB: parseInt(req.body.yearCreatedFromForm), currentlyReadingDB: req.body.currentlyReadingChoiceFromForm}, (err, result) => {
+
+  db.collection('books').insertOne({bookNameDB: req.body.bookNameFromForm, bookAuthorDB: req.body.bookAuthorFromForm, yearCreatedDB: parseInt(req.body.yearCreatedFromForm), currentlyReadingDB: req.body.currentlyReadingChoiceFromForm, readingProgressDB: req.body.readingProgressFromForm}, (err, result) => {
     if (err) return console.log(err)
     console.log('saved to database')
     res.redirect('/') //make a get request for the '/' route and show most recent update of data from database
@@ -47,8 +53,9 @@ app.post('/createBookEntry', (req, res) => {
 app.put('/updateBookEntry/reading', (req, res) => {
   // console.log("request body", req.body)
   //for MongoDB document names left side are the attributes, right side is value from incoming request from the fetch API
+  const bookId = req.body._id;
   db.collection('books')
-  .findOneAndUpdate({bookNameDB: req.body.bookName, bookAuthorDB: req.body.bookAuthor, yearCreatedDB: req.body.yearCreated}, {
+  .findOneAndUpdate({ _id: ObjectId(bookId) }, {
     $set: {
       currentlyReadingDB: "yes"
       // thumbUp (comes from the thumbUp key in a specific document from mongoDB)
@@ -66,8 +73,9 @@ app.put('/updateBookEntry/reading', (req, res) => {
 
 app.put('/updateBookEntry/notReading', (req, res) => {
   console.log(req.body)
+  const bookId = req.body._id;
   db.collection('books')
-  .findOneAndUpdate({name: req.body.name, msg: req.body.msg}, {
+  .findOneAndUpdate({ _id: ObjectId(bookId) }, {
     $set: {
       currentlyReadingDB: "no"
       // { thumbUp - 1} for $inc
@@ -81,8 +89,27 @@ app.put('/updateBookEntry/notReading', (req, res) => {
   })
 })
 
+app.put('/updateReadingProgress', (req, res) => {
+  console.log(req.body)
+  const bookId = req.body._id;
+  db.collection('books')
+  .findOneAndUpdate({ _id: ObjectId(bookId) }, {
+    $set: {
+      readingProgressDB: req.body.readingProgress
+      // { thumbUp - 1} for $inc
+    }
+  }, {
+    sort: {_id: -1},
+    upsert: false
+  }, (err, result) => {
+    if (err) return res.send(err)
+    res.send(result)
+  })
+})
+
 app.delete('/deleteBookEntry', (req, res) => {
-  db.collection('books').findOneAndDelete({bookNameDB: req.body.bookName, bookAuthorDB: req.body.bookAuthor, yearCreatedDB: parseInt(req.body.yearCreated), currentlyReadingDB: req.body.currentlyReading}, (err, result) => {
+  const bookId = req.body._id;
+  db.collection('books').findOneAndDelete({ _id: ObjectId(bookId) }, (err, result) => {
     if (err) return res.send(500, err)
     // res.send('Message deleted!')
     res.send(result)
